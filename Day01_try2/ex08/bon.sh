@@ -1,0 +1,1 @@
+ldapsearch -x "(cn=*BON*)" cn | grep "cn:" | cut -d " " -f 3- | grep "BON" | wc -l | bc

@@ -1,0 +1,8 @@
+Credentials cache: API:94F9D83A-8924-4B50-AB5E-706624E6EE85
+        Principal: awoimbee@42.FR
+
+  Issued                Expires               Principal
+Jul  4 13:57:46 2018  Jul 11 13:57:46 2018  krbtgt/42.FR@42.FR
+Jul  4 13:57:48 2018  Jul 11 13:57:46 2018  ldap/ldap-proxy.42.fr@42.FR
+Jul  4 13:57:48 2018  Jul 11 13:57:46 2018  HTTP/student-storage-2.42.fr@42.FR
+Jul  4 14:03:11 2018  Jul 11 13:57:46 2018  host/vgs-fn1.42.fr@42.FR
