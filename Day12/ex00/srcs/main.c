@@ -1,31 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_list_merge.c                                    :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: awoimbee <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/18 19:35:48 by awoimbee          #+#    #+#             */
-/*   Updated: 2018/07/18 19:35:52 by awoimbee         ###   ########.fr       */
+/*   Created: 2018/07/22 18:30:47 by awoimbee          #+#    #+#             */
+/*   Updated: 2018/07/22 18:30:48 by awoimbee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_list.h"
+#include "head.h"
 
-void	ft_list_merge(t_list **begin_list1, t_list *begin_list2)
+int		main(int argc, char **argv)
 {
-	t_list	*list1_ptr;
+	int		fd;
+	char	tab[1];
 
-	list1_ptr = *begin_list1;
-	if (begin_list2 == 0 || begin_list1 == 0)
-		return ;
-	if (*begin_list1 == 0)
-	{
-		*begin_list1 = begin_list2;
-		return ;
-	}
-	while (list1_ptr->next)
-		list1_ptr = list1_ptr->next;
-	list1_ptr->next = begin_list2;
-	return ;
+	if (argc == 1)
+		return (write(1, "File name missing.\n", 19));
+	if (argc > 2)
+		return (write(1, "Too many arguments.\n", 20));
+	fd = open(argv[1], O_RDONLY);
+	if (fd == -1)
+		return (1);
+	while (read(fd, &tab[0], 1))
+		write(1, &tab[0], 1);
+	close(fd);
+	return (0);
 }

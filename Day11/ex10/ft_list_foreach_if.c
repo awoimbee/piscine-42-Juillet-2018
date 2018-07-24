@@ -21,7 +21,7 @@ void	ft_list_foreach_if(t_list *begin_list,
 
 	if ((list_ptr = begin_list) == 0)
 		return ;
-	while (list_ptr->next)
+	while (list_ptr)
 	{
 		if ((*cmp)(list_ptr->data, data_ref) == 0)
 			(*f)(list_ptr->data);

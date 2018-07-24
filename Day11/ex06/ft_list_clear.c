@@ -15,15 +15,15 @@
 
 void	ft_list_clear(t_list **begin_list)
 {
-	t_list	*to_del;
-	t_list	*next_elem;
+	t_list	*ptr2;
+	t_list	*ptr1;
 
-	to_del = *begin_list;
-	while (to_del->next)
+	ptr1 = *begin_list;
+	while (ptr1)
 	{
-		next_elem = to_del->next;
-		free(to_del);
+		ptr2 = ptr1;
+		ptr1 = ptr1->next;
+		free(ptr2);
 	}
-	free(to_del);
-	*begin_list = 0;
+	*begin_list = NULL;
 }

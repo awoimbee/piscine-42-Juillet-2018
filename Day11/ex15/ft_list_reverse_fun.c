@@ -54,7 +54,7 @@ void		ft_list_reverse_fun(t_list *begin_list)
 	list = begin_list;
 	end = ft_list_size(begin_list) - 1;
 	start = 0;
-	while (0 < end)
+	while (start < end)
 	{
 		buffer = ft_list_at(list, start)->data;
 		ft_list_at(list, start)->data = ft_list_at(list, end)->data;

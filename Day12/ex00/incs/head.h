@@ -1,31 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_list_merge.c                                    :+:      :+:    :+:   */
+/*   head.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: awoimbee <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/18 19:35:48 by awoimbee          #+#    #+#             */
-/*   Updated: 2018/07/18 19:35:52 by awoimbee         ###   ########.fr       */
+/*   Created: 2018/07/22 18:32:51 by awoimbee          #+#    #+#             */
+/*   Updated: 2018/07/22 18:32:54 by awoimbee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_list.h"
+#ifndef HEAD_H
+# define HEAD_H
 
-void	ft_list_merge(t_list **begin_list1, t_list *begin_list2)
-{
-	t_list	*list1_ptr;
+# include <fcntl.h>
+# include <sys/types.h>
+# include <sys/uio.h>
+# include <unistd.h>
+# include <unistd.h>
 
-	list1_ptr = *begin_list1;
-	if (begin_list2 == 0 || begin_list1 == 0)
-		return ;
-	if (*begin_list1 == 0)
-	{
-		*begin_list1 = begin_list2;
-		return ;
-	}
-	while (list1_ptr->next)
-		list1_ptr = list1_ptr->next;
-	list1_ptr->next = begin_list2;
-	return ;
-}
+#endif

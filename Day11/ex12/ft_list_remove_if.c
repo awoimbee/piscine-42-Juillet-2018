@@ -15,27 +15,29 @@
 
 void	ft_list_remove_if(t_list **begin_list, void *data_ref, int (*cmp)())
 {
-	t_list	*list_ptr;
-	t_list	*old_list_ptr;
+	t_list	*ptr;
+	t_list	*ptr2;
 
-	if ((list_ptr = *begin_list) == 0)
+	if ((ptr = *begin_list) == 0 || cmp == 0)
 		return ;
-	old_list_ptr = 0;
-	if (((*cmp)(list_ptr->data, data_ref)) == 0)
+	ptr2 = 0;
+	while (ptr)
 	{
-		*begin_list = list_ptr->next;
-		free(list_ptr);
-		list_ptr = *begin_list;
-	}
-	while (list_ptr->next)
-	{
-		if (((*cmp)(list_ptr->data, data_ref)) == 0)
+		if (((*cmp)(ptr->data, data_ref)) == 0 && ptr2 == 0)
 		{
-			old_list_ptr->next = list_ptr->next;
-			free(list_ptr);
-			list_ptr = old_list_ptr;
+			ptr2 = ptr;
+			ptr = ptr->next;
+			free(ptr2);
+			*begin_list = ptr;
+			continue ;
 		}
-		old_list_ptr = list_ptr;
-		list_ptr = list_ptr->next;
+		if (((*cmp)(ptr->data, data_ref)) == 0)
+		{
+			ptr2->next = ptr->next;
+			ptr = ptr2;
+			free(ptr2->next);
+		}
+		ptr2 = ptr;
+		ptr = ptr->next;
 	}
 }

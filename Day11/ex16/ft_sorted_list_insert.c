@@ -12,7 +12,7 @@
 
 #include "ft_list.h"
 
-void	ft_list_sort(t_list **begin_list, int (*cmp)())
+void		ft_list_sort(t_list **begin_list, int (*cmp)())
 {
 	void	*buff;
 	t_list	*ptr1;
@@ -44,7 +44,7 @@ void		ft_list_push_front(t_list **begin_list, void *data)
 	*begin_list = new_elem;
 }
 
-void ft_sorted_list_insert(t_list **begin_list, void *data, int (*cmp)())
+void		ft_sorted_list_insert(t_list **begin_list, void *data, int (*cmp)())
 {
 	ft_list_push_front(begin_list, data);
 	ft_list_sort(begin_list, cmp);
