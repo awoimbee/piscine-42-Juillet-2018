@@ -24,7 +24,7 @@ $(NAME)	:
 		gcc -Werror -Wall -Wextra $(SRCS) -I $(HEADERS) -o $(NAME)
 
 clean	:
-		@echo "clean"
+		@echo "nothing to clean."
 
 fclean	:	clean
 		rm -f $(NAME)

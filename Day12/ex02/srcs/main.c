@@ -12,55 +12,59 @@
 
 #include "head.h"
 
-void	print_str(char *str)
-{
-	int		i;
-
-	i = 0;
-	while (str[i] > 0)
-		++i;
-	if (i > 0)
-		write(1, str, i);
-}
-
-void	read_file(char *filename)
-{
-	int		fd;
-	char	tab[28000];
-
-	fd = open(filename, O_RDONLY);
-	if (fd == -1)
-	{
-		write(2, "ft_strcat: ", 12);
-		if (errno == 21)
-			write(2, "Is a directory\n", 15);
-		if (errno == 2)
-			write(2, "No such file or directory\n", 26);
-		return ;
-	}
-	while (read(fd, &tab[0], 28000) > 0)
-		print_str(&tab[0]);
-	close(fd);
-}
-
-void	read_stdin(void)
+int		read_stdin(int offset)
 {
 	char	c;
 
+	lseek(STDIN_FILENO, lseek(STDIN_FILENO, 0, SEEK_END) - offset, SEEK_SET);
 	while (read(STDIN_FILENO, &c, 1) > 0)
 		write(1, &c, 1);
+	return (4454);
+}
+
+void	prnt_head(char *fname)
+{
+	write(1, "==> ", 4);
+	print_str(fname, 1);
+	write(1, " <==\n", 5);
+}
+
+int		isoffsetlegal(char *str)
+{
+	char		*tmp;
+
+	tmp = str;
+	while (*str)
+		if (!('0' <= *str && *str <= '9') || str++ == 0)
+		{
+			write(2, "ft_tail: illegal offset -- ", 27);
+			print_str(tmp, 2);
+			write(2, "\n", 1);
+			return (0);
+		}
+	return (1);
 }
 
 int		main(int argc, char **argv)
 {
-	if (argc == 1 && ++argc)
-		argv[1] = "-";
-	while (argc--)
+	unsigned int	offset;
+	char			header;
+	int				i;
+
+	if (!isoffsetlegal(argv[2]))
+		return (0);
+	offset = ft_atoi(argv[2]);
+	header = (argc > 4) ? 1 : 0;
+	if (argc == 3)
+		return (read_stdin(offset));
+	i = 2;
+	while (++i < argc)
 	{
-		if (argv[argc][0] == '-' && argv[argc][1] == '\0')
-			read_stdin();
-		else
-			read_file(argv[argc]);
+		if (header)
+			prnt_head(argv[i]);
+		read_file(argv[i], offset);
+		if (i < argc - 1)
+			write(1, "\n", 1);
 	}
 	return (0);
 }

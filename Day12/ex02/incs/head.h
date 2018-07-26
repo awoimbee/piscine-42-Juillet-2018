@@ -20,4 +20,8 @@
 # include <unistd.h>
 # include <errno.h>
 
+int		ft_atoi(char *str);
+void	print_str(char *str, int channel);
+void	read_file(char *filename, unsigned int offset);
+
 #endif
