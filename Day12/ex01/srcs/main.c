@@ -6,7 +6,7 @@
 /*   By: awoimbee <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/22 18:30:47 by awoimbee          #+#    #+#             */
-/*   Updated: 2018/07/22 18:30:48 by awoimbee         ###   ########.fr       */
+/*   Updated: 2018/09/04 01:17:48 by awoimbee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,9 @@ void	print_str(char *str)
 		write(1, str, i);
 }
 
-void	read_file(char *filename)
+int	ft_open(char* filename)
 {
-	int		fd;
-	char	tab[28000];
+	int	fd;
 
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
@@ -39,8 +38,17 @@ void	read_file(char *filename)
 			
 		if (errno == 2)
 			write(2, ": No such file or directory\n", 28);
-		return ;
 	}
+	return fd;
+}
+
+void	read_file(char *filename)
+{
+	int		fd;
+	char	tab[28000];
+
+	if ((fd = ft_open(filename)) == -1)
+		return ;
 	while (read(fd, &tab[0], 28000) > 0)
 		print_str(&tab[0]);
 	close(fd);
@@ -56,14 +64,17 @@ void	read_stdin(void)
 
 int		main(int argc, char **argv)
 {
-	if (argc == 1 && ++argc)
-		argv[1] = "-";
-	while (argc--)
+	int i;
+
+	if (argc == 1)
+		read_stdin();
+	i = 0;	
+	while (++i < argc) //its reading args in the wrong way !
 	{
-		if (argv[argc][0] == '-' && argv[argc][1] == '\0')
+		if (argv[i][0] == '-' && argv[i][1] == '\0')
 			read_stdin();
 		else
-			read_file(argv[argc]);
+			read_file(argv[i]);
 	}
 	return (0);
 }
