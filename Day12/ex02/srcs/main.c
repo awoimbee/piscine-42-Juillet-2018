@@ -13,12 +13,12 @@
 #include "head.h"
 
 /*
-**  To read a file, starting at its `offset` char
+**  To read a file, starting at its `offset` char (when '+' is used)
 */
 
 void		begin_read(int fd, int offset)
 {
-	char*	tab;
+	char*		tab;
 
 	if ((tab = malloc(offset)) == 0)
 		return ;
@@ -29,25 +29,26 @@ void		begin_read(int fd, int offset)
 		print_str(tab, 1);
 		reset_buff(tab, offset);
 	}
+	free(tab);
 	close(fd);
 }
 
 /*
-** To print the last `offset` chars of a file
+** To print the last `offset` chars of a file (when '+' is NOT used)
 */
-
+#include <stdio.h>
 void		end_read(int fd, int offset)
 {
 	char*		buff1;
 	char*		buff2;
 	char*		tmp;
-	int		buff1_len;
+	int			buff1_len;
 
 	if ((buff1 = malloc(offset)) == NULL)
 		return ;
 	if ((buff2 = malloc(offset)) == NULL)
 		return ;
-	while (read(fd, buff1, offset) == offset)
+	while (read(fd, buff1, offset) == offset || read(fd, buff1, 1) != 0)
 	{
 		reset_buff(buff2, offset);
 		tmp = buff2;
@@ -58,6 +59,8 @@ void		end_read(int fd, int offset)
 	if (offset - buff1_len > 0)
 		write(1, buff2 + buff1_len, offset - buff1_len);
 	write(1, buff1, buff1_len);
+	free(buff1);
+	free(buff2);
 	close(fd);
 }
 
@@ -65,7 +68,7 @@ void		end_read(int fd, int offset)
 ** Function to print the header in between reading multiple files
 */
 
-void	prnt_head(char *fname)
+void		prnt_head(char *fname)
 {
 	write(1, "==> ", 4);
 	print_str(fname, 1);
@@ -77,10 +80,10 @@ void	prnt_head(char *fname)
 **  Returns a negative offset if there's a '+' (yeah I know..)
 */
 
-int		isoffsetlegal(char *str)
+int			get_offset(char *str)
 {
 	char		*tmp;
-	int		res;
+	int			res;
 
 	tmp = str;
 	res = 1;
@@ -97,34 +100,39 @@ int		isoffsetlegal(char *str)
 		}
 	++str;
 	}
-	return (res);
+	return (res * ft_atoi(str));
 }
 
-int		main(int argc, char **argv)
+int			main(int argc, char **argv)
 {
 	int			offset;
 	char		header;
 	int			i;
 
-	if (argc < 3 || (offset = isoffsetlegal(argv[2])) == 0)
+	if (argc < 3 || (offset = get_offset(argv[2])) == 0)
 		return (0);
-	offset *= ft_atoi(argv[2]);
 	header = (argc > 4) ? 1 : 0;
-	if (argc == 3 && offset <= 0)
-		begin_read(STDIN_FILENO, offset * -1);
-	else if (argc == 3 && offset > 0)
-		end_read(STDIN_FILENO, offset);
-	i = 2;
-	while (++i < argc)
+	if (argc == 3)
 	{
-		if (header)
-			prnt_head(argv[i]);
 		if (offset < 0)
-			begin_read(ft_open(argv[i]), offset * -1);
+			begin_read(STDIN_FILENO, offset * -1);
 		else
-			end_read(ft_open(argv[i]), offset);
-		if (i < argc - 1)
-			write(1, "\n", 1);
+			end_read(STDIN_FILENO, offset);
+	}
+	else
+	{
+		i = 2;
+		while (++i < argc)
+		{
+			if (header)
+				prnt_head(argv[i]);
+			if (offset < 0)
+				begin_read(ft_open(argv[i]), offset * -1);
+			else
+				end_read(ft_open(argv[i]), offset);
+			if (i < argc - 1)
+				write(1, "\n", 1);
+		}
 	}
 	return (0);
 }
