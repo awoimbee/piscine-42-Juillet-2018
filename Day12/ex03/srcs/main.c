@@ -42,39 +42,102 @@ int	ft_open(char* filename)
 	return fd;
 }
 
-#include <stdio.h>
-void	print_nbr_hex(int nb)
+char		*f_strrev(char *str)
 {
-	char	c;
-	char*	nums; 
+	char	*start;
+	char	*end;
+	char	buff;
 
-	nums = "0123456789abcdef";
-	int divider = 0xffffffff;
-	while (divider != 0)
+	start = str;
+	end = str;
+	while (*(end + 1))
+		++end;
+	while (start < end)
 	{
-		c = (nb / divider);
-		nb %= divider;
-		divider /= 0xf;
-		write (1, &nums[c], 1);
+		buff = *start;
+		*start = *end;
+		*end = buff;
+		start++;
+		end--;
 	}
-	write (1, "  ", 2); 
-	printf("%s \n", "PUTE DE SALOPE");
+	return (str);
 }
 
+void		itoa_base16(int value, int str_length)
+{
+	char	*str_base;
+	char	*result;
+	int		i;
+	int		base;
+
+	base = 16;
+	str_base = "0123456789abcdef";
+	if (!(result = malloc((str_length + 1) * sizeof(char))))
+		return ;
+	i = 0;
+	result[i] = '0';
+	while (value != 0 && i < str_length)
+	{
+		result[i++] = str_base[value % base];
+		value /= base;
+	}
+	while (i != str_length)
+		result[i++] = '0';
+	result[i++] = '\0';
+	write(1, f_strrev(result), str_length);
+}
+
+void	print_str_b16(char *str, int length)
+{
+	int		i;
+
+	i = -1;
+	while (++i < length)
+	{
+		itoa_base16((int)str[i], 2);
+		if (i == 7)
+			write(1, "  ", 2);
+		else
+			write(1, " ", 1);
+	}
+	while (length++ < 16)
+		write(1, "   ", 3);
+	write(1, " ", 1);
+}
+
+void	print_str_special(char *str, int length)
+{
+	int		i;
+
+	i = -1;
+	while (++i < length)
+	{
+		if (str[i] < 32)
+			str[i] = '.';
+	}
+	write(1, "|", 1);
+	write(1, str, length);
+	write(1, "|", 1);
+}
 
 void	read_file(char *filename)
 {
 	int		fd;
-	char	tab[10];
-	int		offset;
+	char	tab[16];
+	int		global_read;
+	int		local_read;
 
-	offset = 0;
+	global_read = 0;
 	if ((fd = ft_open(filename)) == -1)
 		return ;
-	while ((read(fd, &tab[0], 10) > 0) && (offset += 10))
+	while ((local_read = read(fd, &tab[0], 16)) > 0)
 	{
-		print_nbr_hex(offset);
-		//print_str(&tab[0]);
+		global_read += local_read;
+		itoa_base16(global_read, 8);
+		write(1, "  ", 2);
+		print_str_b16(&tab[0], local_read);
+		print_str_special(&tab[0], local_read);
+		write(1, "\n", 1);
 	}
 	close(fd);
 }
