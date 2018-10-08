@@ -21,7 +21,7 @@ all	:
 		@make $(NAME)
 
 $(NAME)	:
-		gcc -Werror -Wall -Wextra $(SRCS) -I $(HEADERS) -o $(NAME)
+		gcc -Werror -Wall -Wextra -O3 $(SRCS) -I $(HEADERS) -o $(NAME) -Wno-unused-result
 
 clean	:
 		@echo "nothing to clean."
@@ -30,3 +30,6 @@ fclean	:	clean
 		rm -f $(NAME)
 
 re	:	fclean all
+
+fre :	fclean
+	gcc $(SRCS) -I $(HEADERS) -o $(NAME)

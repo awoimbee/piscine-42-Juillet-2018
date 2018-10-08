@@ -17,9 +17,9 @@ void	print_str(char *str)
 	int		i;
 
 	i = 0;
-	while (str[i] > 0)
+	while (str[i] != 0)
 		++i;
-	if (i > 0)
+	if (i != 0)
 		write(1, str, i);
 }
 
@@ -42,16 +42,39 @@ int	ft_open(char* filename)
 	return fd;
 }
 
-char		*f_strrev(char *str)
+char*	ft_strcpy(char *dest, char *src)
+{
+	while (*src != '\0')
+	{
+		*dest = *src;
+		++dest;
+		++src;
+	}
+	*dest = '\0';
+	return (dest);
+}
+
+char*	ft_strncpy(char *dest, char *src, uint len)
+{
+	uint		i;
+
+	i = 0;
+	while (i < len)
+	{
+		dest[i] = src[i];
+		++i;
+	}
+	return (dest + len);
+}
+
+char		*f_strrev(char *str, int len)
 {
 	char	*start;
 	char	*end;
 	char	buff;
 
 	start = str;
-	end = str;
-	while (*(end + 1))
-		++end;
+	end = str + len - 1;
 	while (start < end)
 	{
 		buff = *start;
@@ -63,7 +86,10 @@ char		*f_strrev(char *str)
 	return (str);
 }
 
-void		itoa_base16(int value, int str_length)
+/*
+** result needs to be freed
+*/
+char		*itoa_base16(int value, int str_length)
 {
 	char	*str_base;
 	char	*result;
@@ -73,72 +99,122 @@ void		itoa_base16(int value, int str_length)
 	base = 16;
 	str_base = "0123456789abcdef";
 	if (!(result = malloc((str_length + 1) * sizeof(char))))
-		return ;
+		return (" ");
 	i = 0;
-	result[i] = '0';
-	while (value != 0 && i < str_length)
+	while (i != str_length)
 	{
 		result[i++] = str_base[value % base];
 		value /= base;
 	}
-	while (i != str_length)
-		result[i++] = '0';
-	result[i++] = '\0';
-	write(1, f_strrev(result), str_length);
+	result[i] = '\0';
+	return(f_strrev(result, str_length));
 }
 
-void	print_str_b16(char *str, int length)
+void	print_str_b16(char *str, int length, char *buff)
 {
 	int		i;
 
 	i = -1;
 	while (++i < length)
 	{
-		itoa_base16((int)str[i], 2);
+		ft_strcpy(buff, itoa_base16((int)(unsigned char)str[i], 2));
 		if (i == 7)
-			write(1, "  ", 2);
+			buff = ft_strcpy(buff + 2, "  ");
 		else
-			write(1, " ", 1);
+			buff = ft_strcpy(buff + 2, " ");
 	}
-	while (length++ < 16)
-		write(1, "   ", 3);
-	write(1, " ", 1);
+	while (i < 16)
+	{
+		if (i == 7)
+			buff = ft_strcpy(buff, "    ");
+		else
+			buff = ft_strcpy(buff, "   ");
+		++i;
+	}
+	return ;
 }
 
-void	print_str_special(char *str, int length)
+void	print_str_special(char *str, int length, char *buff)
 {
 	int		i;
 
+	*buff = '|';
+	++buff;
 	i = -1;
 	while (++i < length)
 	{
 		if (str[i] < 32)
-			str[i] = '.';
+			buff[i] = '.';
+		else
+			buff[i] = str[i];
 	}
-	write(1, "|", 1);
-	write(1, str, length);
-	write(1, "|", 1);
+	buff[i] = '|';
 }
 
-void	read_file(char *filename)
+int	ft_strcmp(char *s1, char *s2, int len)
+{
+	int		i;
+
+	i = 0;
+	--len;
+	while (s1[i] == s2[i] && i < len)
+		++i;
+	return (s1[i] - s2[i]);
+}
+
+void	swap_tab(char **tab1, char **tab2)
+{
+	char	*tmp;
+
+	tmp = *tab1;
+	*tab1 = *tab2;
+	*tab2 = tmp;
+}
+
+void	read_file(char *fname)
 {
 	int		fd;
-	char	tab[16];
-	int		global_read;
-	int		local_read;
+	char	*tab;
+	char	*otab;
+	int		glob_read;
+	int		loc_read;
+	char	output[79] = "\0";
 
-	global_read = 0;
-	if ((fd = ft_open(filename)) == -1)
+	glob_read = 0;
+	if ((fd = ft_open(fname)) == -1
+		|| !(tab = malloc(17)) || !(otab = malloc(17)))
 		return ;
-	while ((local_read = read(fd, &tab[0], 16)) > 0)
+	tab[16] = '\0';
+	otab[16] = '\0';
+	while ((loc_read = read(fd, tab, 16)) > 0)
 	{
-		global_read += local_read;
-		itoa_base16(global_read, 8);
-		write(1, "  ", 2);
-		print_str_b16(&tab[0], local_read);
-		print_str_special(&tab[0], local_read);
-		write(1, "\n", 1);
+		tab[loc_read] = '\0';
+		if (ft_strcmp(tab, otab, 16) == 0)
+		{
+			if (ft_strcmp(&output[0], "*\n", 2) != 0)
+			{
+				print_str(&output[0]);
+				ft_strcpy(&output[0], "*\n");
+			}
+			glob_read += loc_read;
+			continue ;
+		}
+		print_str(&output[0]);
+
+		ft_strcpy(&output[0], itoa_base16(glob_read, 8));
+		ft_strcpy(&output[8], "  ");
+		print_str_b16(tab, loc_read, &output[10]);
+		ft_strcpy(&output[59], " ");
+		print_str_special(tab, loc_read, &output[60]);
+		ft_strcpy(&output[60 + 2 + loc_read], "\n");
+		swap_tab(&otab, &tab);
+		glob_read += loc_read;
 	}
+	print_str(&output[0]);
+	print_str(itoa_base16(glob_read, 8));
+	write(1, "\n", 1);
+	free(tab);
+	free(otab);
 	close(fd);
 }
 
