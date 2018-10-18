@@ -28,7 +28,7 @@ void	print_str_b16(char *str, int length, char *buff);
 void	print_str_special(char *str, int length, char *buff);
 int		ft_strncmp(char *s1, char *s2, uint len);
 void	swap_tab(char **tab1, char **tab2);
-void	read_file(char *fname);
+void	read_file(int fd);
 void	read_stdin(void);
 
 #endif

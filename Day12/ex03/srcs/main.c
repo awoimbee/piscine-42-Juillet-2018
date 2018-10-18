@@ -117,11 +117,10 @@ void	print_str_b16(char *str, int length, char *buff)
 	i = -1;
 	while (++i < length)
 	{
-		ft_strcpy(buff, itoa_base16((int)(unsigned char)str[i], 2));
+		buff = ft_strcpy(buff, itoa_base16((int)(unsigned char)str[i], 2));
+		buff = ft_strcpy(buff, " ");
 		if (i == 7)
-			buff = ft_strcpy(buff + 2, "  ");
-		else
-			buff = ft_strcpy(buff + 2, " ");
+			buff = ft_strcpy(buff, " ");
 	}
 	while (i < 16)
 	{
@@ -138,8 +137,7 @@ void	print_str_special(char *str, int length, char *buff)
 {
 	int		i;
 
-	*buff = '|';
-	++buff;
+	*buff++ = '|';
 	i = -1;
 	while (++i < length)
 	{
@@ -151,7 +149,7 @@ void	print_str_special(char *str, int length, char *buff)
 	buff[i] = '|';
 }
 
-int	ft_strcmp(char *s1, char *s2, int len)
+int		ft_strcmp(char *s1, char *s2, int len)
 {
 	int		i;
 
@@ -171,25 +169,20 @@ void	swap_tab(char **tab1, char **tab2)
 	*tab2 = tmp;
 }
 
-void	read_file(char *fname)
+void	read_file(int fd)
 {
-	int		fd;
-	char	*tab;
-	char	*otab;
+	char	**reads;
 	int		glob_read;
 	int		loc_read;
 	char	output[79] = "\0";
 
 	glob_read = 0;
-	if ((fd = ft_open(fname)) == -1
-		|| !(tab = malloc(17)) || !(otab = malloc(17)))
+	if (!(reads = malloc(2)) || !(reads[0] = malloc(17)) || !(reads[1] = malloc(17)))
 		return ;
-	tab[16] = '\0';
-	otab[16] = '\0';
-	while ((loc_read = read(fd, tab, 16)) > 0)
+	while ((loc_read = read(fd, reads[0], 16)) > 0)
 	{
-		tab[loc_read] = '\0';
-		if (ft_strcmp(tab, otab, 16) == 0)
+		//reads[0][loc_read] = '\0';
+		if (ft_strcmp(reads[0], reads[1], 16) == 0)
 		{
 			if (ft_strcmp(&output[0], "*\n", 2) != 0)
 			{
@@ -203,19 +196,29 @@ void	read_file(char *fname)
 
 		ft_strcpy(&output[0], itoa_base16(glob_read, 8));
 		ft_strcpy(&output[8], "  ");
-		print_str_b16(tab, loc_read, &output[10]);
+		print_str_b16(reads[0], loc_read, &output[10]);
 		ft_strcpy(&output[59], " ");
-		print_str_special(tab, loc_read, &output[60]);
+		print_str_special(reads[0], loc_read, &output[60]);
 		ft_strcpy(&output[60 + 2 + loc_read], "\n");
-		swap_tab(&otab, &tab);
+		swap_tab(&reads[1], &reads[0]);
 		glob_read += loc_read;
 	}
 	print_str(&output[0]);
 	print_str(itoa_base16(glob_read, 8));
 	write(1, "\n", 1);
-	free(tab);
-	free(otab);
+	free(reads[0]);
+	free(reads[1]);
+	free(reads);
 	close(fd);
+}
+
+void	open_file(char *fname)
+{
+	int		fd;
+
+	if ((fd = ft_open(fname)) == -1)
+		return ;
+	read_file(fd);
 }
 
 void	read_stdin(void)
@@ -231,14 +234,14 @@ int		main(int argc, char **argv)
 	int i;
 
 	if (argc == 1)
-		read_stdin();
-	i = 0;	
+		read_file(0);
+	i = 0;
 	while (++i < argc) //its reading args in the wrong way !
 	{
 		if (argv[i][0] == '-' && argv[i][1] == '\0')
-			read_stdin();
+			read_file(0);
 		else
-			read_file(argv[i]);
+			open_file(argv[i]);
 	}
 	return (0);
 }
